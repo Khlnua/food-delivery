@@ -1,4 +1,4 @@
-import { Schema, model, models, Model, ObjectId } from "mongoose";
+import { Schema, model, models, Model } from "mongoose";
 
 enum FoodOrderStatusEnum {
   PENDING = "PENDING",
@@ -6,35 +6,39 @@ enum FoodOrderStatusEnum {
   DELIVERED = "DELIVERED",
 }
 
+type FoodOrderItemsSchemaType = {
+  food: Schema.Types.ObjectId;
+  quantity: number;
+};
+
 type FoodOrderSchemaType = {
   user: Schema.Types.ObjectId;
   totalPrice: number;
-  foodOrderItems: {
-    food: { type: Schema.Types.ObjectId; ref: "Food"; required: true };
-    quantity: { type: Number; required: true };
-  };
+  foodOrderItems: FoodOrderItemsSchemaType[];
   status: FoodOrderStatusEnum;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
-const FoodOrderSchema = new Schema<FoodOrderSchemaType>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  totalPrice: { type: Number, required: true },
-  foodOrderItems: [
-    {
-      food: { type: Schema.Types.ObjectId, ref: "Food", required: true },
-      quantity: { type: Number, required: true },
-    },
-  ],
-  status: {
-    type: String,
-    enum: Object.values(FoodOrderStatusEnum),
-    required: true,
+const FoodOrderItemsSchema = new Schema(
+  {
+    food: { type: Schema.Types.ObjectId, ref: "Food", required: true },
+    quantity: { type: Number, required: true },
   },
-  createdAt: { type: Date, default: Date.now() },
-  updatedAt: { type: Date, default: Date.now() },
-});
+  { _id: false }
+);
+
+const FoodOrderSchema = new Schema<FoodOrderSchemaType>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    totalPrice: { type: Number, required: true },
+    foodOrderItems: { type: [FoodOrderItemsSchema], required: true },
+    status: {
+      type: String,
+      enum: Object.values(FoodOrderStatusEnum),
+      default: FoodOrderStatusEnum.PENDING,
+    },
+  },
+  { timestamps: true }
+);
 
 export const FoodOrderModel: Model<FoodOrderSchemaType> =
   models["FoodOrder"] || model("FoodOrder", FoodOrderSchema);

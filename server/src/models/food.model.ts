@@ -5,24 +5,25 @@ type FoodSchemaType = {
   price: number;
   image: string;
   ingredients: string;
-  createdAt: Date;
-  updatedAt: Date;
-  category: Schema.Types.ObjectId;
+  category: Schema.Types.ObjectId[];
 };
 
-const FoodSchema = new Schema<FoodSchemaType>({
-  foodName: { type: String, required: true },
-  price: { type: Number, required: true },
-  image: { type: String, required: true },
-  ingredients: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now() },
-  updatedAt: { type: Date, default: Date.now() },
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: "FoodCategory",
-    required: true,
+const FoodSchema = new Schema<FoodSchemaType>(
+  {
+    foodName: { type: String, required: true },
+    price: { type: Number, required: true },
+    image: { type: String, required: true },
+    ingredients: { type: String, required: true },
+    category: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "FoodCategory",
+        required: false,
+      },
+    ],
   },
-});
+  { timestamps: true }
+);
 
 export const FoodModel: Model<FoodSchemaType> =
   models["Food"] || model("Food", FoodSchema);

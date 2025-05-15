@@ -1,8 +1,7 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import { connectDatabase } from "./database";
-import { authRouter, foodRouter } from "./routers";
-
+import { authRouter, foodRouter, CategoryRouter } from "./routers";
 const app = express();
 
 configDotenv();
@@ -12,5 +11,5 @@ const port = 8000;
 app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/food", foodRouter);
-
+app.use("/food-category", CategoryRouter);
 app.listen(port, () => console.log(`http://localhost:${port}`));

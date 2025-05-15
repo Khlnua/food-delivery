@@ -1,1 +1,1 @@
-export * from "./foodMenu.controller";
+export * from "./foodmenu.controller";

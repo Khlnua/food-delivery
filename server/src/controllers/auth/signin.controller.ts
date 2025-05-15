@@ -16,9 +16,9 @@ export const SignInController = async (req: Request, res: Response) => {
   const checkPassword = decryptHash(password, existingUser?.password);
 
   if (!checkPassword) {
-    res.send(400).send({ message: "Your password is wrong" });
+    res.status(400).send({ message: "Your password is wrong" });
     return;
   }
 
-  res.send(201).send({ message: "Success!" });
+  res.status(201).send({ message: "Success!" });
 };
