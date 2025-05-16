@@ -1,3 +1,4 @@
 export * from "./signup.controller";
 export * from "./signin.controller";
 export * from "./verify-user.controller";
+export * from "./send-email-for-reset-password.controller";

@@ -1,6 +1,15 @@
 import { Router } from "express";
-import { CategoryCreateController } from "../controllers";
+import {
+  AllCategories,
+  CategoryCreateController,
+  DeleteFoodCategory,
+  UpdateFoodCategory,
+} from "../controllers";
 
 export const CategoryRouter = Router();
 
-CategoryRouter.post("/", CategoryCreateController);
+CategoryRouter.route("/").post(CategoryCreateController).get(AllCategories);
+
+CategoryRouter.route("/:foodCategoryId")
+  .patch(UpdateFoodCategory)
+  .delete(DeleteFoodCategory);

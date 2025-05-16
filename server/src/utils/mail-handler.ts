@@ -18,7 +18,7 @@ export const sendUserVerificationLink = async (
   email: string
 ) => {
   await transport.sendMail({
-    subject: "User Verification Link",
+    subject: "Verification Link",
     to: email,
     from: EMAIL_USER,
     html: `
