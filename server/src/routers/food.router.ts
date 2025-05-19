@@ -1,6 +1,12 @@
 import { Router } from "express";
-import { FoodMenuController } from "../controllers";
+import {
+  FoodMenuController,
+  UpdateFoodMenu,
+  DeleteFood,
+  AllFoods,
+} from "../controllers";
 
 export const foodRouter = Router();
 
-foodRouter.post("/create", FoodMenuController);
+foodRouter.route("/").post(FoodMenuController).get(AllFoods);
+foodRouter.route("/:foodId").patch(UpdateFoodMenu).delete(DeleteFood);

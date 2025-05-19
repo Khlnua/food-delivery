@@ -20,5 +20,5 @@ export const SignInController = async (req: Request, res: Response) => {
     return;
   }
 
-  res.status(201).send({ message: "Success!" });
+  res.status(201).send({ message: "Success!" }), existingUser;
 };

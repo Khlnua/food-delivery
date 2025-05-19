@@ -6,10 +6,11 @@ import {
   UpdateFoodCategory,
 } from "../controllers";
 
-export const CategoryRouter = Router();
+export const categoryRouter = Router();
 
-CategoryRouter.route("/").post(CategoryCreateController).get(AllCategories);
+categoryRouter.route("/").post(CategoryCreateController).get(AllCategories);
 
-CategoryRouter.route("/:foodCategoryId")
+categoryRouter
+  .route("/:foodCategoryId")
   .patch(UpdateFoodCategory)
   .delete(DeleteFoodCategory);
