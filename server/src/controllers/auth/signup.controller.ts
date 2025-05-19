@@ -33,5 +33,5 @@ export const SignUpController = async (req: Request, res: Response) => {
     email
   );
 
-  res.status(201).send({ message: "Success" });
+  res.status(201).send({ message: "Success", token: token, existingUser });
 };

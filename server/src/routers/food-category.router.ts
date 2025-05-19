@@ -5,10 +5,14 @@ import {
   DeleteFoodCategory,
   UpdateFoodCategory,
 } from "../controllers";
+import { AuthenticateUser } from "../middlewares";
 
 export const categoryRouter = Router();
 
-categoryRouter.route("/").post(CategoryCreateController).get(AllCategories);
+categoryRouter
+  .route("/")
+  .post(AuthenticateUser, CategoryCreateController)
+  .get(AllCategories);
 
 categoryRouter
   .route("/:foodCategoryId")
