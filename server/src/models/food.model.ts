@@ -18,7 +18,7 @@ const FoodSchema = new Schema<FoodSchemaType>(
       {
         type: Schema.Types.ObjectId,
         ref: "FoodCategory",
-        required: false,
+        required: true,
       },
     ],
   },
@@ -26,4 +26,4 @@ const FoodSchema = new Schema<FoodSchemaType>(
 );
 
 export const FoodModel: Model<FoodSchemaType> =
-  models["Food"] || model("Food", FoodSchema);
+  models["food"] || model("food", FoodSchema);

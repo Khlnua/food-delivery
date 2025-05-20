@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserModel } from "../../models";
-import { decryptHash } from "../../utils";
+import { decryptHash, generateNewToken } from "../../utils";
 
 type UserBody = { email: string; password: string };
 
@@ -20,5 +20,12 @@ export const SignInController = async (req: Request, res: Response) => {
     return;
   }
 
-  res.status(201).send({ message: "Success!" });
+  const newtokenForSignin = generateNewToken(
+    { userId: existingUser._id },
+    24 * 60 * 60 * 1000
+  );
+
+  res
+    .status(201)
+    .send({ message: "Success!", newtokenForSignin, existingUser });
 };

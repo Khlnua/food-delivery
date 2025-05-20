@@ -25,7 +25,7 @@ export const AuthenticateUser = async (
   }
 
   const decodedToken = verifyToken(token) as { userId: string };
-
+  console.log({ decodedToken });
   if (!decodedToken || !decodedToken.userId) {
     res
       .status(400)
@@ -39,4 +39,8 @@ export const AuthenticateUser = async (
     res.status(400).send({ message: "User not found" });
     return;
   }
+
+  req.body.user = existingUser;
+
+  next();
 };

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { FoodOrderModel } from "../../models";
+import { FoodOrderModel, UserModel } from "../../models";
 
 type FoorOrderItem = {
   food: string;
@@ -25,11 +25,15 @@ export const FoodOrderCreateController = async (
     return;
   }
 
-  await FoodOrderModel.create({
+  const { _id } = await FoodOrderModel.create({
     user,
     totalPrice,
     foodOrderItems,
     status,
+  });
+
+  await UserModel.updateOne({
+    $push: { orderedFoods: _id },
   });
 
   res.status(201).send({ message: "Success" });
