@@ -1,9 +1,14 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { format } from "date-fns";
-import { ChevronDownIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { Button } from "@/components/ui/button";
+import { StatusChangeDialog } from "./components";
+import { Checkbox } from "@/components/ui/checkbox";
+import  StatusSelect from "./components/SelectStatus";
+import FoodListPopover from "./components/FoodListPopover";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
 import {
   Table,
@@ -13,29 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
@@ -78,10 +60,13 @@ const dummyOrders: Order[] = [
   },
 ];
 
-export default function OrderDashboard() {
-  const [selectedOrders, setSelectedOrders] = React.useState<number[]>([]);
-  const [orders, setOrders] = React.useState<Order[]>(dummyOrders);
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
+export const AdminOrderDashboard= () => {
+  const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
+  const [orders, setOrders] = useState<Order[]>(dummyOrders);
+  const [statusEditOpen, setStatusEditOpen] = useState(false);
+  const [statusChange, setStatusChange] = useState<OrderStatus | "">("");
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
     to: new Date("2025-05-31"),
   });
@@ -104,10 +89,6 @@ export default function OrderDashboard() {
     return orderDate >= dateRange.from && orderDate <= dateRange.to;
   });
 
-  const [statusEditOpen, setStatusEditOpen] = React.useState(false);
-const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
-
-
   return (
     <div className="p-6 space-y-4 border border-[#E4E4E7] bg-white rounded-lg w-290">
       <div className="flex justify-between">
@@ -119,117 +100,35 @@ const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
         </div>
         <div className="flex gap-3">
           <DatePickerWithRange value={dateRange} onChange={setDateRange} />
-          <Dialog open={statusEditOpen} onOpenChange={setStatusEditOpen}>
-  <DialogTrigger asChild>
-    <Button
-      className="border rounded-full"
-      disabled={selectedOrders.length === 0}
-    >
-      Change delivery state
-    </Button>
-  </DialogTrigger>
 
-  <DialogContent className="sm:max-w-[400px]">
-    <DialogHeader>
-      <DialogTitle className="flex justify-between items-center">
-        Change delivery state
-        <button
-          onClick={() => setStatusEditOpen(false)}
-          className="text-xl font-bold"
-        >
-          ×
-        </button>
-      </DialogTitle>
-    </DialogHeader>
+  <StatusChangeDialog
+  open={statusEditOpen}
+  onOpenChange={setStatusEditOpen}
+  selected={selectedOrders}
+  onSave={() => {
+    setOrders((prev) =>
+      prev.map((order) =>
+        selectedOrders.includes(order.id)
+          ? { ...order, status: statusChange as OrderStatus }
+          : order
+      )
+    )
+    setSelectedOrders([])
+    setStatusEditOpen(false)
+    setStatusChange("")
+  }}
+  statusChange={statusChange}
+  setStatusChange={setStatusChange}
+/>
 
-    <div className="flex justify-center gap-3 my-4">
-      {(["delivered", "pending", "canceled"] as OrderStatus[]).map((status) => (
-        <Button
-          key={status}
-          variant={statusChange === status ? "default" : "outline"}
-          className={`rounded-full ${
-            status === "delivered"
-              ? "text-red-500 border-red-500"
-              : status === "pending"
-              ? "text-yellow-600 border-yellow-600"
-              : "text-gray-600 border-gray-600"
-          }`}
-          onClick={() => setStatusChange(status)}
-        >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </Button>
-      ))}
-    </div>
 
-    <DialogFooter>
-      <Button
-        className="w-full bg-black text-white hover:bg-gray-900"
-        disabled={!statusChange}
-        onClick={() => {
-          setOrders((prev) =>
-            prev.map((order) =>
-              selectedOrders.includes(order.id)
-                ? { ...order, status: statusChange as OrderStatus }
-                : order
-            )
-          );
-          setSelectedOrders([]);
-          setStatusEditOpen(false);
-          setStatusChange("");
-        }}
-      >
-        Save
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-
-<div className="flex flex-col gap-2">
   <Button
-    className="border rounded-full"
+    className="border rounded-full "
     disabled={selectedOrders.length === 0}
     onClick={() => setStatusEditOpen((prev) => !prev)}
   >
     Change delivery state
   </Button>
-
-  {statusEditOpen && (
-    <div className="p-4 border rounded-lg bg-gray-50 space-y-3 shadow">
-      <Select
-        value={statusChange}
-        onValueChange={(value) => setStatusChange(value as OrderStatus)}
-      >
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Select new status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="delivered">Delivered</SelectItem>
-          <SelectItem value="canceled">Canceled</SelectItem>
-        </SelectContent>
-      </Select>
-
-      <Button
-        className="bg-green-600 text-white"
-        disabled={!statusChange}
-        onClick={() => {
-          setOrders((prev) =>
-            prev.map((order) =>
-              selectedOrders.includes(order.id)
-                ? { ...order, status: statusChange as OrderStatus }
-                : order
-            )
-          );
-          setSelectedOrders([]); 
-          setStatusEditOpen(false);
-          setStatusChange(""); 
-        }}
-      >
-        Save
-      </Button>
-    </div>
-  )}
-</div>
 
         </div>
       </div>
@@ -238,7 +137,7 @@ const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
         <TableHeader>
           <TableRow>
             <TableHead>
-              <Checkbox
+              <Checkbox className="border border-black"
                 checked={selectedOrders.length === orders.length}
                 onCheckedChange={(checked) =>
                   setSelectedOrders(checked ? orders.map((order) => order.id) : [])
@@ -259,6 +158,7 @@ const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
             <TableRow key={order.id}>
               <TableCell>
                 <Checkbox
+                className="border border-black"
                   checked={selectedOrders.includes(order.id)}
                   onCheckedChange={(checked) =>
                     handleSelect(order.id, !!checked)
@@ -268,28 +168,7 @@ const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
               <TableCell>{index + 1}</TableCell>
               <TableCell>{order.customerEmail}</TableCell>
               <TableCell>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      {order.foods.length} foods
-                      <ChevronDownIcon className="ml-1 h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-56">
-                    <ul className="space-y-2">
-                      {order.foods.map((food, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <img
-                            src={food.image}
-                            alt={food.name}
-                            className="w-8 h-8 rounded"
-                          />
-                          <span>{food.name}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </PopoverContent>
-                </Popover>
+                 <FoodListPopover foods={order.foods} />
               </TableCell>
               <TableCell>
                 {format(new Date(order.date), "yyyy-MM-dd")}
@@ -297,21 +176,12 @@ const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
               <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
               <TableCell>{order.address}</TableCell>
               <TableCell>
-                <Select
-                  value={order.status}
-                  onValueChange={(value) =>
-                    handleStatusChange(order.id, value as OrderStatus)
-                  }
-                >
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="canceled">Canceled</SelectItem>
-                  </SelectContent>
-                </Select>
+                
+<StatusSelect
+  value={order.status}
+  onChange={(newStatus) => handleStatusChange(order.id, newStatus)}
+/>
+                 
               </TableCell>
             </TableRow>
           ))}
@@ -320,3 +190,5 @@ const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
     </div>
   );
 }
+
+export default AdminOrderDashboard;
