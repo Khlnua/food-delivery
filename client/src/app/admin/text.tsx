@@ -7,7 +7,7 @@ import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { StatusChangeDialog } from "./components";
 import { Checkbox } from "@/components/ui/checkbox";
-import StatusSelect from "./components/SelectStatus";
+import  StatusSelect from "./components/SelectStatus";
 import FoodListPopover from "./components/FoodListPopover";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
@@ -28,7 +28,7 @@ type Food = {
 };
 
 type Order = {
-  id: string; 
+  id: number;
   customerEmail: string;
   foods: Food[];
   date: string;
@@ -37,53 +37,77 @@ type Order = {
   status: OrderStatus;
 };
 
-export const AdminOrderDashboard = () => {
-  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
+useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      const res = await  axios("http://localhost:8000/food-order");
+      const data = await res.data;
+
+      const transformedOrders: Order[] = data.orders.map((order: any) => ({
+        id: order._id,
+        customerEmail: order.user.email,
+        address: order.user.address || "N/A",
+        date: order.createdAt,
+        totalPrice: order.totalPrice,
+        status: order.status.toLowerCase(), // Convert "PENDING" → "pending"
+        foods: order.foodOrderItems.map((item: any) => ({
+          name: item.food.foodName,
+          image: item.food.image,
+        })),
+      }));
+
+      setOrders(transformedOrders);
+    } catch (error) {
+      console.error("Failed to fetch orders", error);
+    }
+  };
+
+  fetchOrders();
+}, []);
+
+
+const dummyOrders: Order[] = [
+  {
+    id: 1,
+    customerEmail: "user1@example.com",
+    foods: [
+      { name: "Pizza", image: "/pizza.jpg" },
+      { name: "Burger", image: "/burger.jpg" },
+    ],
+    date: "2025-05-20",
+    totalPrice: 32.5,
+    address: "123 Main St",
+    status: "pending",
+  },
+  {
+    id: 2,
+    customerEmail: "user2@example.com",
+    foods: [{ name: "Sushi", image: "/sushi.jpg" }],
+    date: "2025-05-21",
+    totalPrice: 18.0,
+    address: "456 Elm St",
+    status: "delivered",
+  },
+];
+
+export const TestDashboard= () => {
+  const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
+  const [orders, setOrders] = useState<Order[]>(dummyOrders);
   const [statusEditOpen, setStatusEditOpen] = useState(false);
   const [statusChange, setStatusChange] = useState<OrderStatus | "">("");
+
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
     to: new Date("2025-05-31"),
   });
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios("http://localhost:8000/food-order");
-        const data = res.data;
-
-        console.log("Fetched orders:", data);
-
-        const transformedOrders: Order[] = data.orders.map((order: any) => ({
-          id: order._id,
-          customerEmail: order.user.email,
-          address: order.user.address || "N/A",
-          date: order.createdAt,
-          totalPrice: order.totalPrice,
-          status: order.status.toLowerCase(),
-          foods: order.foodOrderItems.map((item: any) => ({
-            name: item.food.foodName,
-            image: item.food.image,
-          })),
-        }));
-
-        setOrders(transformedOrders);
-      } catch (error) {
-        console.error("Failed to fetch orders", error);
-      }
-    };
-
-    fetchOrders();
-  }, []);
-
-  const handleSelect = (id: string, checked: boolean) => {
+  const handleSelect = (id: number, checked: boolean) => {
     setSelectedOrders((prev) =>
       checked ? [...prev, id] : prev.filter((orderId) => orderId !== id)
     );
   };
 
-  const handleStatusChange = (id: string, status: OrderStatus) => {
+  const handleStatusChange = (id: number, status: OrderStatus) => {
     setOrders((prev) =>
       prev.map((order) => (order.id === id ? { ...order, status } : order))
     );
@@ -100,38 +124,42 @@ export const AdminOrderDashboard = () => {
       <div className="flex justify-between">
         <div>
           <h2 className="text-xl font-semibold">Orders</h2>
-          <p className="text-sm text-gray-500">{orders.length} items</p>
+          <p className="text-sm text-gray-500">
+            {orders.length} items
+          </p>
         </div>
         <div className="flex gap-3">
           <DatePickerWithRange value={dateRange} onChange={setDateRange} />
 
-          <StatusChangeDialog
-            open={statusEditOpen}
-            onOpenChange={setStatusEditOpen}
-            selected={selectedOrders}
-            onSave={() => {
-              setOrders((prev) =>
-                prev.map((order) =>
-                  selectedOrders.includes(order.id)
-                    ? { ...order, status: statusChange as OrderStatus }
-                    : order
-                )
-              );
-              setSelectedOrders([]);
-              setStatusEditOpen(false);
-              setStatusChange("");
-            }}
-            statusChange={statusChange}
-            setStatusChange={setStatusChange}
-          />
+  <StatusChangeDialog
+  open={statusEditOpen}
+  onOpenChange={setStatusEditOpen}
+  selected={selectedOrders}
+  onSave={() => {
+    setOrders((prev) =>
+      prev.map((order) =>
+        selectedOrders.includes(order.id)
+          ? { ...order, status: statusChange as OrderStatus }
+          : order
+      )
+    )
+    setSelectedOrders([])
+    setStatusEditOpen(false)
+    setStatusChange("")
+  }}
+  statusChange={statusChange}
+  setStatusChange={setStatusChange}
+/>
 
-          <Button
-            className="border rounded-full "
-            disabled={selectedOrders.length === 0}
-            onClick={() => setStatusEditOpen((prev) => !prev)}
-          >
-            Change delivery state
-          </Button>
+
+  <Button
+    className="border rounded-full "
+    disabled={selectedOrders.length === 0}
+    onClick={() => setStatusEditOpen((prev) => !prev)}
+  >
+    Change delivery state
+  </Button>
+
         </div>
       </div>
 
@@ -139,8 +167,7 @@ export const AdminOrderDashboard = () => {
         <TableHeader>
           <TableRow>
             <TableHead>
-              <Checkbox
-                className="border border-black"
+              <Checkbox className="border border-black"
                 checked={selectedOrders.length === orders.length}
                 onCheckedChange={(checked) =>
                   setSelectedOrders(checked ? orders.map((order) => order.id) : [])
@@ -161,7 +188,7 @@ export const AdminOrderDashboard = () => {
             <TableRow key={order.id}>
               <TableCell>
                 <Checkbox
-                  className="border border-black"
+                className="border border-black"
                   checked={selectedOrders.includes(order.id)}
                   onCheckedChange={(checked) =>
                     handleSelect(order.id, !!checked)
@@ -171,16 +198,20 @@ export const AdminOrderDashboard = () => {
               <TableCell>{index + 1}</TableCell>
               <TableCell>{order.customerEmail}</TableCell>
               <TableCell>
-                <FoodListPopover foods={order.foods} />
+                 <FoodListPopover foods={order.foods} />
               </TableCell>
-              <TableCell>{format(new Date(order.date), "yyyy-MM-dd")}</TableCell>
+              <TableCell>
+                {format(new Date(order.date), "yyyy-MM-dd")}
+              </TableCell>
               <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
               <TableCell>{order.address}</TableCell>
               <TableCell>
-                <StatusSelect
-                  value={order.status}
-                  onChange={(newStatus) => handleStatusChange(order.id, newStatus)}
-                />
+                
+<StatusSelect
+  value={order.status}
+  onChange={(newStatus) => handleStatusChange(order.id, newStatus)}
+/>
+                 
               </TableCell>
             </TableRow>
           ))}
@@ -188,9 +219,6 @@ export const AdminOrderDashboard = () => {
       </Table>
     </div>
   );
-};
+}
 
-export default AdminOrderDashboard;
-
-
-
+export default TestDashboard;

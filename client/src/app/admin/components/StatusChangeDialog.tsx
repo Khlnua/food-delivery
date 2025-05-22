@@ -19,7 +19,7 @@ import {
   }: {
     open: boolean
     onOpenChange: (open: boolean) => void
-    selected: number[]
+    selected: string[]
     onSave: () => void
     statusChange: OrderStatus | ""
     setStatusChange: (status: OrderStatus | "") => void
