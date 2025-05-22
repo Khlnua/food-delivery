@@ -1,6 +1,10 @@
 "use client";
 
 import React from "react";
+import { format } from "date-fns";
+import { ChevronDownIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+
 import {
   Table,
   TableBody,
@@ -23,9 +27,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
-import { format } from "date-fns";
-import { ChevronDownIcon } from "lucide-react";
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
@@ -71,7 +81,7 @@ const dummyOrders: Order[] = [
 export default function OrderDashboard() {
   const [selectedOrders, setSelectedOrders] = React.useState<number[]>([]);
   const [orders, setOrders] = React.useState<Order[]>(dummyOrders);
-  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>({
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
     to: new Date("2025-05-31"),
   });
@@ -89,22 +99,138 @@ export default function OrderDashboard() {
   };
 
   const filteredOrders = orders.filter((order) => {
+    if (!dateRange?.from || !dateRange?.to) return true;
     const orderDate = new Date(order.date);
     return orderDate >= dateRange.from && orderDate <= dateRange.to;
   });
 
+  const [statusEditOpen, setStatusEditOpen] = React.useState(false);
+const [statusChange, setStatusChange] = React.useState<OrderStatus | "">("");
+
+
   return (
-    <div className="p-6 ml-15 space-y-4 border border-[#E4E4E7] bg-[#FFFFFF] rounded-lg w-293">
+    <div className="p-6 space-y-4 border border-[#E4E4E7] bg-white rounded-lg w-290">
       <div className="flex justify-between">
-        <div className="flex flex-col items-start justify-between">
+        <div>
           <h2 className="text-xl font-semibold">Orders</h2>
-          <p className="text-[#71717A] text-12px font-medium">
+          <p className="text-sm text-gray-500">
             {orders.length} items
           </p>
         </div>
-        <div className="flex gap-3 ">
-          <DatePickerWithRange />
-          <Button className="border rounded-full">Change delivery state</Button>
+        <div className="flex gap-3">
+          <DatePickerWithRange value={dateRange} onChange={setDateRange} />
+          <Dialog open={statusEditOpen} onOpenChange={setStatusEditOpen}>
+  <DialogTrigger asChild>
+    <Button
+      className="border rounded-full"
+      disabled={selectedOrders.length === 0}
+    >
+      Change delivery state
+    </Button>
+  </DialogTrigger>
+
+  <DialogContent className="sm:max-w-[400px]">
+    <DialogHeader>
+      <DialogTitle className="flex justify-between items-center">
+        Change delivery state
+        <button
+          onClick={() => setStatusEditOpen(false)}
+          className="text-xl font-bold"
+        >
+          ×
+        </button>
+      </DialogTitle>
+    </DialogHeader>
+
+    <div className="flex justify-center gap-3 my-4">
+      {(["delivered", "pending", "canceled"] as OrderStatus[]).map((status) => (
+        <Button
+          key={status}
+          variant={statusChange === status ? "default" : "outline"}
+          className={`rounded-full ${
+            status === "delivered"
+              ? "text-red-500 border-red-500"
+              : status === "pending"
+              ? "text-yellow-600 border-yellow-600"
+              : "text-gray-600 border-gray-600"
+          }`}
+          onClick={() => setStatusChange(status)}
+        >
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Button>
+      ))}
+    </div>
+
+    <DialogFooter>
+      <Button
+        className="w-full bg-black text-white hover:bg-gray-900"
+        disabled={!statusChange}
+        onClick={() => {
+          setOrders((prev) =>
+            prev.map((order) =>
+              selectedOrders.includes(order.id)
+                ? { ...order, status: statusChange as OrderStatus }
+                : order
+            )
+          );
+          setSelectedOrders([]);
+          setStatusEditOpen(false);
+          setStatusChange("");
+        }}
+      >
+        Save
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+<div className="flex flex-col gap-2">
+  <Button
+    className="border rounded-full"
+    disabled={selectedOrders.length === 0}
+    onClick={() => setStatusEditOpen((prev) => !prev)}
+  >
+    Change delivery state
+  </Button>
+
+  {statusEditOpen && (
+    <div className="p-4 border rounded-lg bg-gray-50 space-y-3 shadow">
+      <Select
+        value={statusChange}
+        onValueChange={(value) => setStatusChange(value as OrderStatus)}
+      >
+        <SelectTrigger className="w-[200px]">
+          <SelectValue placeholder="Select new status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="pending">Pending</SelectItem>
+          <SelectItem value="delivered">Delivered</SelectItem>
+          <SelectItem value="canceled">Canceled</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Button
+        className="bg-green-600 text-white"
+        disabled={!statusChange}
+        onClick={() => {
+          setOrders((prev) =>
+            prev.map((order) =>
+              selectedOrders.includes(order.id)
+                ? { ...order, status: statusChange as OrderStatus }
+                : order
+            )
+          );
+          setSelectedOrders([]); 
+          setStatusEditOpen(false);
+          setStatusChange(""); 
+        }}
+      >
+        Save
+      </Button>
+    </div>
+  )}
+</div>
+
         </div>
       </div>
 
@@ -115,7 +241,7 @@ export default function OrderDashboard() {
               <Checkbox
                 checked={selectedOrders.length === orders.length}
                 onCheckedChange={(checked) =>
-                  setSelectedOrders(checked ? orders.map((o) => o.id) : [])
+                  setSelectedOrders(checked ? orders.map((order) => order.id) : [])
                 }
               />
             </TableHead>
@@ -129,7 +255,7 @@ export default function OrderDashboard() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredOrders.map((order, idx) => (
+          {filteredOrders.map((order, index) => (
             <TableRow key={order.id}>
               <TableCell>
                 <Checkbox
@@ -139,14 +265,14 @@ export default function OrderDashboard() {
                   }
                 />
               </TableCell>
-              <TableCell>{idx + 1}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{order.customerEmail}</TableCell>
               <TableCell>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm">
                       {order.foods.length} foods
-                      <ChevronDownIcon />
+                      <ChevronDownIcon className="ml-1 h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-56">

@@ -70,6 +70,39 @@ export function DateRangePicker({
   )
 }
 
+ <Popover>
+            <PopoverTrigger asChild>
+              <div>
+
+            <Button className="border rounded-full" disabled={selectedOrders.length === 0}>
+               Change delivery state
+            </Button>
+            <PopoverContent className="w-[200px]">
+            <Select
+      onValueChange={(value) => {
+        setOrders((prev) =>
+          prev.map((order) =>
+            selectedOrders.includes(order.id)
+              ? { ...order, status: value as OrderStatus }
+              : order
+          )
+        );
+        setSelectedOrders([]); 
+      }}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Set status for selected" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="pending">Pending</SelectItem>
+        <SelectItem value="delivered">Delivered</SelectItem>
+        <SelectItem value="canceled">Canceled</SelectItem>
+      </SelectContent>
+    </Select>
+            </PopoverContent>
+              </div>
+            </PopoverTrigger>
+          </Popover> 
 
 
 

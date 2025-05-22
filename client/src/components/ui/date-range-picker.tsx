@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { addDays, format } from "date-fns";
+import {  format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
@@ -14,16 +14,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DatePickerWithRange({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  });
+interface Props {
+  className?: string;
+  value: DateRange | undefined;
+  onChange: (range: DateRange | undefined) => void;
+}
 
+export function DatePickerWithRange({ className, value, onChange }: Props) {
   return (
-    <div className={cn("grid gap-2 ", className)}>
+    <div className={cn("grid gap-2", className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -31,18 +30,18 @@ export function DatePickerWithRange({
             variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal border rounded-full",
-              !date && "text-muted-foreground"
+              !value && "text-muted-foreground"
             )}
           >
-            <CalendarDays />
-            {date?.from ? (
-              date.to ? (
+            <CalendarDays className="mr-2 h-4 w-4" />
+            {value?.from ? (
+              value.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(value.from, "LLL dd, y")} -{" "}
+                  {format(value.to, "LLL dd, y")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(value.from, "LLL dd, y")
               )
             ) : (
               <span>Pick a date</span>
@@ -53,9 +52,9 @@ export function DatePickerWithRange({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
+            defaultMonth={value?.from}
+            selected={value}
+            onSelect={onChange}
             numberOfMonths={2}
           />
         </PopoverContent>
