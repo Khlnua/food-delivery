@@ -9,7 +9,7 @@ export async function Layout({ children }: { children: React.ReactNode }) {
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   return (
-    <div className="flex flex-row justify-between p-5">
+    <div className="flex flex-row justify-between p-5 bg-[#F4F4F5]">
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
         <main>

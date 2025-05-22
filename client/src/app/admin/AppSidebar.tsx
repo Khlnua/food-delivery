@@ -14,18 +14,13 @@ import {
 const items = [
   {
     title: "Food menu",
-    url: "#",
+    url: "/admin/foodmenu",
     icon: LayoutDashboard,
   },
   {
     title: "Orders",
-    url: "#",
+    url: "/admin",
     icon: Truck,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
   },
 ];
 

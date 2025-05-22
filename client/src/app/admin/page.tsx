@@ -10,12 +10,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-// import { DateRangePicker } from "@/components/ui/date-range-picker"; // Custom-made or external
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { format } from "date-fns";
+import { ChevronDownIcon } from "lucide-react";
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
@@ -84,10 +94,18 @@ export default function OrderDashboard() {
   });
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Orders</h2>
-        {/* <DateRangePicker value={dateRange} onChange={setDateRange} /> */}
+    <div className="p-6 ml-15 space-y-4 border border-[#E4E4E7] bg-[#FFFFFF] rounded-lg w-293">
+      <div className="flex justify-between">
+        <div className="flex flex-col items-start justify-between">
+          <h2 className="text-xl font-semibold">Orders</h2>
+          <p className="text-[#71717A] text-12px font-medium">
+            {orders.length} items
+          </p>
+        </div>
+        <div className="flex gap-3 ">
+          <DatePickerWithRange />
+          <Button className="border rounded-full">Change delivery state</Button>
+        </div>
       </div>
 
       <Table>
@@ -128,13 +146,18 @@ export default function OrderDashboard() {
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm">
                       {order.foods.length} foods
+                      <ChevronDownIcon />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-56">
                     <ul className="space-y-2">
-                      {order.foods.map((food, i) => (
-                        <li key={i} className="flex items-center gap-2">
-                          <img src={food.image} alt={food.name} className="w-8 h-8 rounded" />
+                      {order.foods.map((food, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <img
+                            src={food.image}
+                            alt={food.name}
+                            className="w-8 h-8 rounded"
+                          />
                           <span>{food.name}</span>
                         </li>
                       ))}
@@ -142,7 +165,9 @@ export default function OrderDashboard() {
                   </PopoverContent>
                 </Popover>
               </TableCell>
-              <TableCell>{format(new Date(order.date), "yyyy-MM-dd")}</TableCell>
+              <TableCell>
+                {format(new Date(order.date), "yyyy-MM-dd")}
+              </TableCell>
               <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
               <TableCell>{order.address}</TableCell>
               <TableCell>
