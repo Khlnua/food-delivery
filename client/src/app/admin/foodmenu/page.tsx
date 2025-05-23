@@ -1,5 +1,11 @@
+import { CategoriesForAdmin } from "./components";
+
 const AdminFoodMenuPage = () => {
-  return <div>AdminFoodMenuPage</div>;
+  return (
+    <div>
+      <CategoriesForAdmin />
+    </div>
+  );
 };
 
 export default AdminFoodMenuPage;

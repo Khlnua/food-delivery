@@ -7,7 +7,7 @@ import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { StatusChangeDialog } from "./components";
 import { Checkbox } from "@/components/ui/checkbox";
-import  StatusSelect from "./components/SelectStatus";
+import StatusSelect from "./components/SelectStatus";
 import FoodListPopover from "./components/FoodListPopover";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
@@ -40,7 +40,7 @@ type Order = {
 useEffect(() => {
   const fetchOrders = async () => {
     try {
-      const res = await  axios("http://localhost:8000/food-order");
+      const res = await axios("http://localhost:8000/food-order");
       const data = await res.data;
 
       const transformedOrders: Order[] = data.orders.map((order: any) => ({
@@ -64,7 +64,6 @@ useEffect(() => {
 
   fetchOrders();
 }, []);
-
 
 const dummyOrders: Order[] = [
   {
@@ -90,7 +89,7 @@ const dummyOrders: Order[] = [
   },
 ];
 
-export const TestDashboard= () => {
+export const TestDashboard = () => {
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
   const [orders, setOrders] = useState<Order[]>(dummyOrders);
   const [statusEditOpen, setStatusEditOpen] = useState(false);
@@ -124,42 +123,38 @@ export const TestDashboard= () => {
       <div className="flex justify-between">
         <div>
           <h2 className="text-xl font-semibold">Orders</h2>
-          <p className="text-sm text-gray-500">
-            {orders.length} items
-          </p>
+          <p className="text-sm text-gray-500">{orders.length} items</p>
         </div>
         <div className="flex gap-3">
           <DatePickerWithRange value={dateRange} onChange={setDateRange} />
 
-  <StatusChangeDialog
-  open={statusEditOpen}
-  onOpenChange={setStatusEditOpen}
-  selected={selectedOrders}
-  onSave={() => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        selectedOrders.includes(order.id)
-          ? { ...order, status: statusChange as OrderStatus }
-          : order
-      )
-    )
-    setSelectedOrders([])
-    setStatusEditOpen(false)
-    setStatusChange("")
-  }}
-  statusChange={statusChange}
-  setStatusChange={setStatusChange}
-/>
+          <StatusChangeDialog
+            open={statusEditOpen}
+            onOpenChange={setStatusEditOpen}
+            selected={selectedOrders}
+            onSave={() => {
+              setOrders((prev) =>
+                prev.map((order) =>
+                  selectedOrders.includes(order.id)
+                    ? { ...order, status: statusChange as OrderStatus }
+                    : order
+                )
+              );
+              setSelectedOrders([]);
+              setStatusEditOpen(false);
+              setStatusChange("");
+            }}
+            statusChange={statusChange}
+            setStatusChange={setStatusChange}
+          />
 
-
-  <Button
-    className="border rounded-full "
-    disabled={selectedOrders.length === 0}
-    onClick={() => setStatusEditOpen((prev) => !prev)}
-  >
-    Change delivery state
-  </Button>
-
+          <Button
+            className="border rounded-full "
+            disabled={selectedOrders.length === 0}
+            onClick={() => setStatusEditOpen((prev) => !prev)}
+          >
+            Change delivery state
+          </Button>
         </div>
       </div>
 
@@ -167,10 +162,13 @@ export const TestDashboard= () => {
         <TableHeader>
           <TableRow>
             <TableHead>
-              <Checkbox className="border border-black"
+              <Checkbox
+                className="border border-black"
                 checked={selectedOrders.length === orders.length}
                 onCheckedChange={(checked) =>
-                  setSelectedOrders(checked ? orders.map((order) => order.id) : [])
+                  setSelectedOrders(
+                    checked ? orders.map((order) => order.id) : []
+                  )
                 }
               />
             </TableHead>
@@ -188,7 +186,7 @@ export const TestDashboard= () => {
             <TableRow key={order.id}>
               <TableCell>
                 <Checkbox
-                className="border border-black"
+                  className="border border-black"
                   checked={selectedOrders.includes(order.id)}
                   onCheckedChange={(checked) =>
                     handleSelect(order.id, !!checked)
@@ -198,7 +196,7 @@ export const TestDashboard= () => {
               <TableCell>{index + 1}</TableCell>
               <TableCell>{order.customerEmail}</TableCell>
               <TableCell>
-                 <FoodListPopover foods={order.foods} />
+                <FoodListPopover foods={order.foods} />
               </TableCell>
               <TableCell>
                 {format(new Date(order.date), "yyyy-MM-dd")}
@@ -206,12 +204,12 @@ export const TestDashboard= () => {
               <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
               <TableCell>{order.address}</TableCell>
               <TableCell>
-                
-<StatusSelect
-  value={order.status}
-  onChange={(newStatus) => handleStatusChange(order.id, newStatus)}
-/>
-                 
+                <StatusSelect
+                  value={order.status}
+                  onChange={(newStatus) =>
+                    handleStatusChange(order.id, newStatus)
+                  }
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -219,6 +217,34 @@ export const TestDashboard= () => {
       </Table>
     </div>
   );
-}
+};
 
 export default TestDashboard;
+
+// useEffect(() => {
+//   const fetchOrders = async () => {
+//     try {
+//       const res = await axios.get("http://localhost:8000/food-order");
+//       const setOrderData = res.data;
+//       console.log("Fetched orders:", setOrderData);
+//       const transformedOrders: Order[] = setOrderData.orders.map(
+//         (order: any) => ({
+//           id: order._id,
+//           customerEmail: order.user.email,
+//           address: order.user.address || "N/A",
+//           date: order.createdAt,
+//           totalPrice: order.totalPrice,
+//           status: order.status.toLowerCase(),
+//           foods: order.foodOrderItems.map((item: any) => ({
+//             name: item.food.foodName,
+//             image: item.food.image,
+//           })),
+//         })
+//       );
+//       setOrders(transformedOrders);
+//     } catch (error) {
+//       console.error("Failed to fetch orders", error);
+//     }
+//   };
+//   fetchOrders();
+// }, []);

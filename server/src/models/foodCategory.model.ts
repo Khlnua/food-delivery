@@ -1,12 +1,12 @@
 import { Schema, model, models, Model } from "mongoose";
 
 type FoodCategorySchemaType = {
-  catergoryName: string;
+  categoryName: string;
 };
 
 const FoodCategorySchema = new Schema<FoodCategorySchemaType>(
   {
-    catergoryName: { type: String, required: true },
+    categoryName: { type: String, required: true },
   },
   { timestamps: true }
 );

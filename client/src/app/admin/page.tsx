@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { error } from "console";
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
@@ -28,7 +29,7 @@ type Food = {
 };
 
 type Order = {
-  id: string; 
+  id: string;
   customerEmail: string;
   foods: Food[];
   date: string;
@@ -36,46 +37,37 @@ type Order = {
   address: string;
   status: OrderStatus;
 };
+const BASE_URL = "http://localhost:8000";
 
 export const AdminOrderDashboard = () => {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [statusEditOpen, setStatusEditOpen] = useState(false);
   const [statusChange, setStatusChange] = useState<OrderStatus | "">("");
+  const [data, setData] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
     to: new Date("2025-05-31"),
   });
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const getOrders = async () => {
       try {
-        const res = await axios("http://localhost:8000/food-order");
-        const data = res.data;
-
-        console.log("Fetched orders:", data);
-
-        const transformedOrders: Order[] = data.orders.map((order: any) => ({
-          id: order._id,
-          customerEmail: order.user.email,
-          address: order.user.address || "N/A",
-          date: order.createdAt,
-          totalPrice: order.totalPrice,
-          status: order.status.toLowerCase(),
-          foods: order.foodOrderItems.map((item: any) => ({
-            name: item.food.foodName,
-            image: item.food.image,
-          })),
-        }));
-
-        setOrders(transformedOrders);
+        const res = await axios.get<Order>(`${BASE_URL}/food-order`);
+        setData(res.data);
       } catch (error) {
-        console.error("Failed to fetch orders", error);
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError(String(error));
+        }
       }
     };
+  });
 
-    fetchOrders();
-  }, []);
+  console.log();
 
   const handleSelect = (id: string, checked: boolean) => {
     setSelectedOrders((prev) =>
@@ -143,7 +135,9 @@ export const AdminOrderDashboard = () => {
                 className="border border-black"
                 checked={selectedOrders.length === orders.length}
                 onCheckedChange={(checked) =>
-                  setSelectedOrders(checked ? orders.map((order) => order.id) : [])
+                  setSelectedOrders(
+                    checked ? orders.map((order) => order.id) : []
+                  )
                 }
               />
             </TableHead>
@@ -173,13 +167,17 @@ export const AdminOrderDashboard = () => {
               <TableCell>
                 <FoodListPopover foods={order.foods} />
               </TableCell>
-              <TableCell>{format(new Date(order.date), "yyyy-MM-dd")}</TableCell>
+              <TableCell>
+                {format(new Date(order.date), "yyyy-MM-dd")}
+              </TableCell>
               <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
               <TableCell>{order.address}</TableCell>
               <TableCell>
                 <StatusSelect
                   value={order.status}
-                  onChange={(newStatus) => handleStatusChange(order.id, newStatus)}
+                  onChange={(newStatus) =>
+                    handleStatusChange(order.id, newStatus)
+                  }
                 />
               </TableCell>
             </TableRow>
@@ -191,6 +189,3 @@ export const AdminOrderDashboard = () => {
 };
 
 export default AdminOrderDashboard;
-
-
-
