@@ -221,30 +221,30 @@ export const TestDashboard = () => {
 
 export default TestDashboard;
 
-// useEffect(() => {
-//   const fetchOrders = async () => {
-//     try {
-//       const res = await axios.get("http://localhost:8000/food-order");
-//       const setOrderData = res.data;
-//       console.log("Fetched orders:", setOrderData);
-//       const transformedOrders: Order[] = setOrderData.orders.map(
-//         (order: any) => ({
-//           id: order._id,
-//           customerEmail: order.user.email,
-//           address: order.user.address || "N/A",
-//           date: order.createdAt,
-//           totalPrice: order.totalPrice,
-//           status: order.status.toLowerCase(),
-//           foods: order.foodOrderItems.map((item: any) => ({
-//             name: item.food.foodName,
-//             image: item.food.image,
-//           })),
-//         })
-//       );
-//       setOrders(transformedOrders);
-//     } catch (error) {
-//       console.error("Failed to fetch orders", error);
-//     }
-//   };
-//   fetchOrders();
-// }, []);
+useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/food-order");
+      const setOrderData = res.data;
+      console.log("Fetched orders:", setOrderData);
+      const transformedOrders: Order[] = setOrderData.orders.map(
+        (order: any) => ({
+          id: order._id,
+          customerEmail: order.user.email,
+          address: order.user.address || "N/A",
+          date: order.createdAt,
+          totalPrice: order.totalPrice,
+          status: order.status.toLowerCase(),
+          foods: order.foodOrderItems.map((item: any) => ({
+            name: item.food.foodName,
+            image: item.food.image,
+          })),
+        })
+      );
+      setOrders(transformedOrders);
+    } catch (error) {
+      console.error("Failed to fetch orders", error);
+    }
+  };
+  fetchOrders();
+}, []);

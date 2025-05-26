@@ -19,33 +19,48 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { error } from "console";
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
-type Food = {
-  name: string;
+export type Food = {
+  foodName: string;
+  price: number;
   image: string;
+  ingredients: string;
+};
+
+type User = {
+  email: string;
+  password: string;
+  phoneNumber: string;
+  address: string;
+  ttl: Date;
+  isVerified: boolean;
+};
+
+export type FoodOrderItems = {
+  food: Food;
+  quantity: number;
 };
 
 type Order = {
-  id: string;
-  customerEmail: string;
-  foods: Food[];
-  date: string;
+  _id: string;
+  createdAt: Date;
   totalPrice: number;
-  address: string;
   status: OrderStatus;
+  foodOrderItems: FoodOrderItems[];
+  user: User;
 };
-const BASE_URL = "http://localhost:8000";
+
+type AllOrder = {
+  orders: Order[];
+};
 
 export const AdminOrderDashboard = () => {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
   const [statusEditOpen, setStatusEditOpen] = useState(false);
   const [statusChange, setStatusChange] = useState<OrderStatus | "">("");
-  const [data, setData] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
@@ -55,19 +70,18 @@ export const AdminOrderDashboard = () => {
   useEffect(() => {
     const getOrders = async () => {
       try {
-        const res = await axios.get<Order>(`${BASE_URL}/food-order`);
-        setData(res.data);
+        const res = await axios.get<AllOrder>(
+          "http://localhost:8000/food-order"
+        );
+        setOrders(res.data?.orders);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
-        } else {
-          setError(String(error));
         }
       }
     };
-  });
-
-  console.log();
+    getOrders();
+  }, []);
 
   const handleSelect = (id: string, checked: boolean) => {
     setSelectedOrders((prev) =>
@@ -77,13 +91,14 @@ export const AdminOrderDashboard = () => {
 
   const handleStatusChange = (id: string, status: OrderStatus) => {
     setOrders((prev) =>
-      prev.map((order) => (order.id === id ? { ...order, status } : order))
+      prev.map((order) => (order._id === id ? { ...order, status } : order))
     );
   };
 
   const filteredOrders = orders.filter((order) => {
     if (!dateRange?.from || !dateRange?.to) return true;
-    const orderDate = new Date(order.date);
+    const orderDate = new Date(order.createdAt);
+    console.log(order);
     return orderDate >= dateRange.from && orderDate <= dateRange.to;
   });
 
@@ -104,7 +119,7 @@ export const AdminOrderDashboard = () => {
             onSave={() => {
               setOrders((prev) =>
                 prev.map((order) =>
-                  selectedOrders.includes(order.id)
+                  selectedOrders.includes(order._id)
                     ? { ...order, status: statusChange as OrderStatus }
                     : order
                 )
@@ -136,7 +151,7 @@ export const AdminOrderDashboard = () => {
                 checked={selectedOrders.length === orders.length}
                 onCheckedChange={(checked) =>
                   setSelectedOrders(
-                    checked ? orders.map((order) => order.id) : []
+                    checked ? orders.map((order) => order._id) : []
                   )
                 }
               />
@@ -152,31 +167,31 @@ export const AdminOrderDashboard = () => {
         </TableHeader>
         <TableBody>
           {filteredOrders.map((order, index) => (
-            <TableRow key={order.id}>
+            <TableRow key={order._id}>
               <TableCell>
                 <Checkbox
                   className="border border-black"
-                  checked={selectedOrders.includes(order.id)}
+                  checked={selectedOrders.includes(order._id)}
                   onCheckedChange={(checked) =>
-                    handleSelect(order.id, !!checked)
+                    handleSelect(order._id, !!checked)
                   }
                 />
               </TableCell>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{order.customerEmail}</TableCell>
+              <TableCell>{order.user.email}</TableCell>
               <TableCell>
-                <FoodListPopover foods={order.foods} />
+                <FoodListPopover foodOrderItems={order.foodOrderItems} />
               </TableCell>
               <TableCell>
-                {format(new Date(order.date), "yyyy-MM-dd")}
+                {format(new Date(order.createdAt), "yyyy-MM-dd")}
               </TableCell>
               <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
-              <TableCell>{order.address}</TableCell>
+              <TableCell>{order.user.address}</TableCell>
               <TableCell>
                 <StatusSelect
                   value={order.status}
                   onChange={(newStatus) =>
-                    handleStatusChange(order.id, newStatus)
+                    handleStatusChange(order._id, newStatus)
                   }
                 />
               </TableCell>

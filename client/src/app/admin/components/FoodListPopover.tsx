@@ -1,30 +1,43 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { ChevronDownIcon } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { ChevronDownIcon } from "lucide-react";
+import { FoodOrderItems } from "../page";
 
-type Food = { name: string; image: string }
+export const FoodListPopover = ({
+  foodOrderItems,
+}: {
+  foodOrderItems: FoodOrderItems[];
+}) => {
+  console.log("foodsn in props", foodOrderItems);
 
-export const FoodListPopover = ({ foods }: { foods: Food[] }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm">
-          {foods.length} foods
+          {foodOrderItems.length} foods
           <ChevronDownIcon className="ml-1 h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-56">
         <ul className="space-y-2">
-          {foods.map((food, index) => (
+          {foodOrderItems.map((order, index) => (
             <li key={index} className="flex items-center gap-2">
-              <img src={food.image} alt={food.name} className="w-8 h-8 rounded" />
-              <span>{food.name}</span>
+              <img
+                src={order.food.image}
+                alt={order.food.foodName}
+                className="w-8 h-8 rounded"
+              />
+              <p>{order.food.foodName}</p>X<p>{order.quantity}</p>
             </li>
           ))}
         </ul>
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
 
-export default FoodListPopover
+export default FoodListPopover;
