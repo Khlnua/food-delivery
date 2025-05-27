@@ -1,10 +1,12 @@
 import { UserContextProvider } from "@/provider/UserProvider";
+import { PropsWithChildren } from "react";
 
-const UserPage = () => {
-  return;
-  <UserContextProvider>
-    <div>UserPage</div>;
-  </UserContextProvider>;
+const UserPage = ({ children }: PropsWithChildren) => {
+  return (
+    <UserContextProvider>
+      <div>{children}</div>
+    </UserContextProvider>
+  );
 };
 
 export default UserPage;

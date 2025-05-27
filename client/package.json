@@ -35,7 +35,9 @@
     "date-input": "^2.0.0",
     "dialog": "^0.3.1",
     "dropdown-menu": "^0.1.1",
+    "formik": "^2.4.6",
     "lucide-react": "^0.511.0",
+    "motion": "^12.14.0",
     "next": "15.3.2",
     "popover": "^2.4.1",
     "react": "^19.0.0",
@@ -46,6 +48,7 @@
     "switch": "^0.0.0",
     "swr": "^2.3.3",
     "tailwind-merge": "^3.3.0",
+    "yup": "^1.6.1",
     "zod": "^3.25.17"
   },
   "devDependencies": {

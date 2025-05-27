@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import {  format } from "date-fns";
+import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
@@ -27,7 +26,7 @@ export function DatePickerWithRange({ className, value, onChange }: Props) {
         <PopoverTrigger asChild>
           <Button
             id="date"
-            variant={"outline"}
+            // variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal border rounded-full",
               !value && "text-muted-foreground"
