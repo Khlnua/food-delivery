@@ -54,7 +54,7 @@ const SignupSchema = Yup.object().shape({
           <div>
           <Field
           as="input"
-            className="border rounded-md px-3 py-2"
+            className="border rounded-md px-3 py-2 w-104"
             name="email"
             placeholder="Enter your email address"
             type="email"
@@ -72,6 +72,8 @@ const SignupSchema = Yup.object().shape({
                   name="password"
                   type="password"
                   placeholder="Enter your password"
+                  className="border rounded-md px-3 py-2 w-104"
+
                 />
                 <ErrorMessage
                   name="password"

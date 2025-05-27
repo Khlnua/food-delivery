@@ -7,13 +7,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/utils/EmailController";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const LogInSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Please enter a valid email address")
-    .required("Email is required"),
-  password: Yup.string()
+const ResetPasswordSchema = Yup.object().shape({
+  password: Yup.string().min(6, "Password must be at least 6 characters")
     .required("Password is required"),
+    confirmPassword: Yup.string().when("password", (password, schema)=> password? schema.required().oneOf([Yup.ref("password")], "Passwords must match"): schema), 
 });
 
 const UserLogin = () => {
@@ -38,17 +37,16 @@ const emailValidation = (email: string) => {
       <ChevronLeft size={36} />
     </Button>
 
-    <p className="font-semibold text-24px">Log in </p>
+    <p className="font-semibold text-24px">Create new password </p>
     <p className="font-normal text-[16px] text-[#71717A]">
-    Log in to enjoy your favorite dishes.
-    </p>
+    Set a new password with a combination of letters and numbers for better security.    </p>
 
     <Formik
       initialValues={{
         email: "",
         password: "",
       }}
-      validationSchema={LogInSchema}
+      validationSchema={ResetPasswordSchema}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
                   try {
                     await signIn(values);
@@ -65,26 +63,11 @@ const emailValidation = (email: string) => {
       {({isSubmitting}) => (
         <Form className="flex flex-col gap-6">
           <div>
-          <Field
-          as="input"
-          className="border rounded-md px-3 py-2 w-104"
-          name="email"
-            placeholder="Enter your email address"
-            type="email"
-          />
-           <ErrorMessage
-            name="email"
-            component="div"
-            className="text-red-500 text-sm"
-            />
-          </div>
-
-          <div>
                 <Field
                   as={Input}
                   name="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Password"
                   className="border rounded-md px-3 py-2 w-104"
 
                 />
@@ -95,14 +78,32 @@ const emailValidation = (email: string) => {
                 />
               </div>
 
-<a href="http://localhost:3000/reset-password">Forgot password ?</a>
+          <div>
+                <Field
+                  as={Input}
+                  name="password"
+                  type="password"
+                  placeholder="Confirm"
+                  className="border rounded-md px-3 py-2 w-104"
 
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm"
+                />
+              </div>
+
+<div className="flex gap-3 items-center">
+    <Checkbox/>
+    <p>Show password</p>
+</div>
 <Button
                 className="h-9 px-8 bg-[#18181B] hover:opacity-25"
                 type="submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Signing In..." : "Let's Go"}
+                {isSubmitting ? "..." : "Create password"}
               </Button>
           
         </Form>
@@ -110,12 +111,7 @@ const emailValidation = (email: string) => {
     </Formik>
   
 
-    <div className="flex gap-3 justify-center">
-      <p>Don't have an account?</p>
-      <a href="http://localhost:3000/signup" className="text-blue-600">
-        Sign up
-      </a>
-    </div>
+    
   </div>)
 };
 
