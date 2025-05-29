@@ -12,7 +12,6 @@ import {
   export const StatusChangeDialog = ({
     open,
     onOpenChange,
-    selected,
     onSave,
     statusChange,
     setStatusChange,

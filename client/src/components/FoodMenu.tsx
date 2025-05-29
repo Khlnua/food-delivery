@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 type FoodCategory = {
   _id: string;
