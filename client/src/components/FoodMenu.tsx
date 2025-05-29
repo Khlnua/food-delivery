@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 type FoodCategory = {
   _id: string;
@@ -33,8 +33,12 @@ export const FoodMenu = () => {
           "http://localhost:8000/food-category"
         );
         setMenuData(response.data?.allFilteredFoods || []);
-      } catch (error: any) {
-        setError(error.message || "Failed to fetch categories");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          setError(error.message || "Failed to fetch categories");
+        } else {
+          setError("An unknown error occurred");
+        }
       }
     };
     fetchCategories();
@@ -42,6 +46,11 @@ export const FoodMenu = () => {
 
   return (
     <div className="flex flex-col pl-20">
+      {error && (
+        <p className="text-red-500 font-medium">
+          {error}
+        </p>
+      )}
       {menuData.map((category) => (
         <div key={category._id} className="flex flex-col gap-4 p-6 w-300">
           <div>

@@ -22,12 +22,15 @@ import {
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
+
+
 export type Food = {
   foodName: string;
   price: number;
   image: string;
   ingredients: string;
 };
+
 
 type User = {
   email: string;
@@ -61,12 +64,10 @@ export const AdminOrderDashboard = () => {
   const [statusEditOpen, setStatusEditOpen] = useState(false);
   const [statusChange, setStatusChange] = useState<OrderStatus | "">("");
   const [orders, setOrders] = useState<Order[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
     to: new Date("2025-05-31"),
-  });
-
+  }); 
   useEffect(() => {
     const getOrders = async () => {
       try {
@@ -76,7 +77,7 @@ export const AdminOrderDashboard = () => {
         setOrders(res.data?.orders);
       } catch (error) {
         if (error instanceof Error) {
-          setError(error.message);
+          console.error("Failed to fetch orders:", error.message); 
         }
       }
     };
@@ -99,7 +100,7 @@ export const AdminOrderDashboard = () => {
     if (!dateRange?.from || !dateRange?.to) return true;
     const orderDate = new Date(order.createdAt);
     console.log(order);
-    return orderDate >= dateRange.from && orderDate <= dateRange.to;
+    return orderDate >= dateRange.from && dateRange.to;
   });
 
   console.log({ filteredOrders });

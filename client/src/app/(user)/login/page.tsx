@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/utils/EmailController";
 import { Formik, Field, Form, ErrorMessage } from "formik";
+import { AxiosError } from "axios"; 
 
 const LogInSchema = Yup.object().shape({
   email: Yup.string()
@@ -16,20 +17,7 @@ const LogInSchema = Yup.object().shape({
 });
 
 const UserLogin = () => {
-  const [email, setEmail] = useState("");
-  const [isValid, setIsValid] = useState(true);
   const { push } = useRouter();
-
-  const emailValidation = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    setIsValid(emailValidation(value));
-  };
 
   return (
     <div className="w-104 flex flex-col gap-6 ">
@@ -55,9 +43,10 @@ const UserLogin = () => {
               localStorage.setItem("token", response.newtokenForSignin);
             }
             push("/");
-          } catch (error: any) {
+          } catch (error) {
+            const err = error as AxiosError; 
             setErrors({
-              email: error.response?.data?.message || "Signup failed",
+              email: (err.response?.data as { message?: string })?.message || "An error occurred during login", // Improved fallback message
             });
           } finally {
             setSubmitting(false);
@@ -110,7 +99,7 @@ const UserLogin = () => {
       </Formik>
 
       <div className="flex gap-3 justify-center">
-        <p>Don't have an account?</p>
+        <p>Don&apos;t have an account?</p> {/* Escaped the single quote */}
         <a href="http://localhost:3000/signup" className="text-blue-600">
           Sign up
         </a>

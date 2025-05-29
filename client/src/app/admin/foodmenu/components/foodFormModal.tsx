@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { GetFoodImage } from "./FoodImageUpload";
+import { GetFoodImage } from "./FoodImageUpload"; 
 import { Trash, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 type FoodFormProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
-  initialData?: any;
+  onSubmit: (data: { foodName: string; price: number; ingredients: string; image: string; category: string }) => void; 
+  initialData?: { _id:string, foodName: string; price: number; ingredients: string; image: string } | null; 
   categoryId: string;
 };
 
@@ -28,6 +28,7 @@ export const FoodFormModal = ({
   categoryId,
 }: FoodFormProps) => {
   const [form, setForm] = useState({
+    _id: "",
     foodName: "",
     price: "",
     ingredients: "",
@@ -37,6 +38,7 @@ export const FoodFormModal = ({
   useEffect(() => {
     if (initialData) {
       setForm({
+        _id: initialData._id || "",
         foodName: initialData.foodName || "",
         price: initialData.price?.toString() || "",
         ingredients: initialData.ingredients || "",
@@ -44,6 +46,7 @@ export const FoodFormModal = ({
       });
     } else {
       setForm({
+        _id: "",
         foodName: "",
         price: "",
         ingredients: "",
@@ -68,6 +71,7 @@ export const FoodFormModal = ({
     };
     onSubmit(formatted); 
     setForm({
+      _id: "",
       foodName: "",
       price: "",
       ingredients: "",

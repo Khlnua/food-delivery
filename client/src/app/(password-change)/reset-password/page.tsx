@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { ChevronLeft } from "lucide-react";
 import * as Yup from "yup";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { requestPasswordReset } from "@/utils/EmailController";
+import { AxiosError } from "axios"; // Ensure AxiosError is correctly imported
 
 const ResetPasswordSchema = Yup.object().shape({
   email: Yup.string()
@@ -15,20 +15,7 @@ const ResetPasswordSchema = Yup.object().shape({
 
 const ResetPasswordPage = () => {
 
-  const [email, setEmail] = useState("");
-  const [isValid, setIsValid] = useState(true); 
   const { push } = useRouter();
-
-const emailValidation = (email: string) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setEmail(value);
-      setIsValid(emailValidation(value));
-  };
 
 return (
 <div className="w-104 flex flex-col gap-6 ">
@@ -49,9 +36,10 @@ return (
                 try {
                   await requestPasswordReset(values.email);
                   push("/");
-                } catch (error: any) {
+                } catch (error) { 
+                  const err = error as AxiosError; 
                   setErrors({
-                    email: error.response?.data?.message || "failed",
+                    email: (err.response?.data as { message?: string })?.message || "An error occurred while resetting password", // Improved fallback message
                   });
                 } finally {
                   setSubmitting(false);
@@ -93,7 +81,7 @@ return (
 
 
   <div className="flex gap-3 justify-center">
-    <p>Don't have an account?</p>
+    <p>Don&apos;t have an account?</p> 
     <a href="http://localhost:3000/signup" className="text-blue-600">
       Sign up
     </a>

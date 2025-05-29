@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,12 +25,9 @@ type AllFoodCategories = {
 };
 
 export const CategoriesForAdmin = () => {
-  const { push } = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [adding, setAdding] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [data, setData] = useState<FoodCategory[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -39,8 +35,8 @@ export const CategoriesForAdmin = () => {
         "http://localhost:8000/food-category"
       );
       setData(response.data?.allFilteredFoods || []);
-    } catch (error: any) {
-      setError(error.message || "Failed to fetch data");
+    } catch (error) {
+      console.error("Failed to fetch data:", error); 
     }
   };
 
@@ -81,9 +77,7 @@ export const CategoriesForAdmin = () => {
         <Button className="border rounded-full bg-white text-black border-[#E4E4E7]">
           All Dishes
           <span>
-            {/* {data.map((category) => (
-              <span>{category.foods.length}</span>
-            ))} */}
+        
           </span>
         </Button>
 
@@ -120,9 +114,9 @@ export const CategoriesForAdmin = () => {
             <DialogFooter>
               <Button
                 onClick={handleAddCategory}
-                disabled={!categoryName.trim() || adding}
+                disabled={!categoryName.trim()}
               >
-                {adding ? "Adding..." : "Add category"}
+                Add category
               </Button>
             </DialogFooter>
           </DialogContent>

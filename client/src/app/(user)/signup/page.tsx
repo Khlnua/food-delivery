@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signUp } from "@/utils/EmailController";
 import { Formik, Field, Form, ErrorMessage } from "formik";
+import { AxiosError } from "axios"; 
 
 const SignupSchema = Yup.object().shape({
   email: Yup.string()
@@ -40,9 +41,10 @@ const SignupSchema = Yup.object().shape({
                   try {
                     await signUp(values);
                     push("/");
-                  } catch (err: any) {
+                  } catch (err) {
+                    const error = err as AxiosError; 
                     setErrors({
-                      email: err.response?.data?.message || "Signup failed",
+                      email: (error.response?.data as { message?: string })?.message || "An error occurred during signup", // Improved fallback message
                     });
                   } finally {
                     setSubmitting(false);

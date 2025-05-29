@@ -40,18 +40,18 @@ export const FoodMenuForAdmin = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: { foodName: string; price: number; ingredients: string; image: string; category: string }) => { // Replaced `any` with specific type
     try {
       const payload = {
         ...data,
-        category: [categoryId], 
+        category: [categoryId],
       };
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (editData) {
         await axios.patch(
           `http://localhost:8000/food/${editData._id}`,
-          payload,  
+          payload,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ export const FoodMenuForAdmin = () => {
       }
       setModalOpen(false);
       setEditData(null);
-      mutate(); 
+      mutate();
     } catch (error) {
       console.error("Submit failed", error);
       alert("Failed to save the dish.");

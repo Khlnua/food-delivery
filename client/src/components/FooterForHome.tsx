@@ -17,7 +17,6 @@ type AllFoodCategories = {
 export const FooterForHome = () => {
   const { push } = useRouter();
   const [data, setData] = useState<FoodCategory[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -25,8 +24,12 @@ export const FooterForHome = () => {
         "http://localhost:8000/food-category"
       );
       setData(response.data?.allFilteredFoods || []);
-    } catch (error: any) {
-      setError(error.message || "Failed to fetch data");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.message || "Failed to fetch data");
+      } else {
+        console.error("An unexpected error occurred");
+      }
     }
   };
 
