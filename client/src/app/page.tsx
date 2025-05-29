@@ -1,5 +1,5 @@
-// import { FoodMenu } from '@/components/FoodMenu'
-// import { FooterForHome } from "@/components/FooterForHome";
+import { FoodMenu } from "@/components/FoodMenu";
+import { FooterForHome } from "@/components/FooterForHome";
 import HeaderForHome from "@/components/HeaderForHome";
 import Image from "next/image";
 import React from "react";
@@ -11,8 +11,8 @@ const HomePage = () => {
       <div className="w-full h-[700px] relative">
         <Image src="/HomePIc.png" alt="Main" layout="fill" />
       </div>
-      {/* <FoodMenu/> */}
-      {/* <FooterForHome/> */}
+      <FoodMenu />
+      <FooterForHome />
     </div>
   );
 };

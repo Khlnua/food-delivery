@@ -1,33 +1,37 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { FacebookIcon, InstagramIcon } from "lucide-react";
+import { FacebookIcon, HandPlatter, InstagramIcon } from "lucide-react";
 
 type FoodCategory = {
   _id: string;
   categoryName: string;
 };
 
+type AllFoodCategories = {
+  allFilteredFoods: FoodCategory[];
+};
+
 export const FooterForHome = () => {
   const { push } = useRouter();
-  const [data, setData] = useState<FoodCategory[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<FoodCategory[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get<AllFoodCategories>(
+        "http://localhost:8000/food-category"
+      );
+      setData(response.data?.allFilteredFoods || []);
+    } catch (error: any) {
+      setError(error.message || "Failed to fetch data");
+    }
+  };
+
   useEffect(() => {
-    axios
-      .get<FoodCategory[]>(`http://localhost:8000/food-category`)
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+    fetchCategories();
   }, []);
 
   return (
@@ -43,15 +47,13 @@ export const FooterForHome = () => {
         <p>Fresh fast delivered</p>
       </div>
       <div className="flex px-[88px] py-[76px]">
-        <div className=" flex   h-full w-full gap-[220px]">
+        <div className=" flex h-full w-full justify-between">
           <div className="flex flex-col items-center">
-            <Image
-              src="./Logo.svg"
-              alt="Logo"
-              width={46}
-              height={38}
+            <HandPlatter
               onClick={() => push("/")}
+              className="text-red-500 fill-red-500"
             />
+
             <p className="text-white text-[20px] font-semibold">
               Nom{" "}
               <span className="text-[#EF4444] text-[20px] font-semibold">
@@ -70,23 +72,12 @@ export const FooterForHome = () => {
             <div className="flex gap-[56px]">
               <div className="flex flex-col gap-4">
                 <h1 className="text-[#71717A] text-[16px]">Menu</h1>
-                {data?.slice(0, 5).map((cat) => (
+                {data?.slice(0, 5).map((category) => (
                   <p
-                    key={cat._id}
+                    key={category._id}
                     className="cursor-pointer hover:underline text-white"
                   >
-                    {cat.categoryName}
-                  </p>
-                ))}
-              </div>
-              <div className="flex flex-col gap-4">
-                <h1>si</h1>
-                {data?.slice(5, 10).map((cat) => (
-                  <p
-                    key={cat._id}
-                    className="cursor-pointer hover:underline text-white"
-                  >
-                    {cat.categoryName}
+                    {category.categoryName}
                   </p>
                 ))}
               </div>
@@ -100,6 +91,14 @@ export const FooterForHome = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <hr className="text-gray-300 px-20" />
+      <div className="flex justify-center gap-20 text-[#71717A] text-[14px] px-20 py-5 items-center">
+        <p>Copy right 2024 © Nomnom LLC</p>
+        <p>Privacy policy </p>
+        <p>Terms and conditoin</p>
+        <p>Cookie policy</p>
       </div>
     </div>
   );

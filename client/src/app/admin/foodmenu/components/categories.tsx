@@ -18,10 +18,11 @@ import {
 type FoodCategory = {
   _id: string;
   categoryName: string;
+  foods: [];
 };
 
 type AllFoodCategories = {
-  categories: FoodCategory[];
+  allFilteredFoods: FoodCategory[];
 };
 
 export const CategoriesForAdmin = () => {
@@ -37,7 +38,7 @@ export const CategoriesForAdmin = () => {
       const response = await axios.get<AllFoodCategories>(
         "http://localhost:8000/food-category"
       );
-      setData(response.data?.categories || []);
+      setData(response.data?.allFilteredFoods || []);
     } catch (error: any) {
       setError(error.message || "Failed to fetch data");
     }
@@ -73,12 +74,17 @@ export const CategoriesForAdmin = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-6 bg-[#FFFFFF] border rounded-xl w-230">
+    <div className="flex flex-col gap-4 p-6 bg-[#FFFFFF] border rounded-xl w-300 mt-5">
       <h4 className="font-semibold text-[20px]">Dishes category</h4>
 
       <div className="flex gap-4 flex-wrap">
         <Button className="border rounded-full bg-white text-black border-[#E4E4E7]">
           All Dishes
+          <span>
+            {/* {data.map((category) => (
+              <span>{category.foods.length}</span>
+            ))} */}
+          </span>
         </Button>
 
         {data.map((category) => (
@@ -87,6 +93,7 @@ export const CategoriesForAdmin = () => {
             className="border rounded-full bg-white text-black border-[#E4E4E7]"
           >
             {category.categoryName}
+            <span>{category.foods.length}</span>
           </Button>
         ))}
 
