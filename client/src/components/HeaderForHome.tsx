@@ -32,6 +32,12 @@ const HeaderForHome = () => {
         >
           Log In
         </Button>
+        <Button
+          className="flex rounded-full text-[14px] font-medium px-3 py-2 bg-white text-black"
+          onClick={() => push("/admin")}
+        >
+          Admin
+        </Button>
       </div>
     </div>
   )
