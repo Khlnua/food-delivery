@@ -58,7 +58,7 @@ export const FoodMenu = () => {
               >
                 <div className="h-32 rounded-md relative">
                   <img
-                    className="rounded-md w-full h-[129px]"
+                    className="rounded-md w-full h-[129px] object-cover"
                     src={food.image}
                     alt={food.foodName}
                   />

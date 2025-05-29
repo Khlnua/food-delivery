@@ -1,4 +1,4 @@
-import { Settings, LayoutDashboard, Truck, HandPlatter } from "lucide-react";
+"use client";
 
 import {
   Sidebar,
@@ -10,6 +10,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
+import {  LayoutDashboard, Truck, HandPlatter } from "lucide-react";
 
 const items = [
   {
@@ -25,12 +27,14 @@ const items = [
 ];
 
 export const AppSidebar = () => {
+
+  const {push} = useRouter()
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            <div className="flex gap-2 justify-center items-center mt-5 px-4 py-3">
+            <div onClick={() => push("/")} className="flex gap-2 justify-center items-center mt-5 px-4 py-3">
               <HandPlatter className="text-red-500 fill-red-500" />
               <div>
                 <p className="text-18px font-semibold text-black">NomNom</p>

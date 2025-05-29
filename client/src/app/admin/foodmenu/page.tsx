@@ -1,5 +1,5 @@
 import { CategoriesForAdmin } from "./components";
-import FoodMenuForAdmin from "./components/foodMenuForAdmin";
+import { FoodMenuForAdmin } from "./components";
 
 const AdminFoodMenuPage = () => {
   return (

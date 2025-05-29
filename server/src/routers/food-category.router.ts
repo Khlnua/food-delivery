@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   AllCategories,
   CategoryCreateController,
+  DeleteFood,
   DeleteFoodCategory,
   UpdateFoodCategory,
 } from "../controllers";
@@ -31,3 +32,5 @@ categoryRouter
     authorization(UserRoleEnum.ADMIN),
     DeleteFoodCategory
   );
+
+  categoryRouter.delete("/:categoryId/food/:foodId", DeleteFood )
