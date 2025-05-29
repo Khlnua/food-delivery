@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect, useState, FC } from "react";
 import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { StatusChangeDialog } from "./components";
@@ -22,15 +22,12 @@ import {
 
 type OrderStatus = "pending" | "delivered" | "canceled";
 
-
-
 export type Food = {
   foodName: string;
   price: number;
   image: string;
   ingredients: string;
 };
-
 
 type User = {
   email: string;
@@ -59,7 +56,7 @@ type AllOrder = {
   orders: Order[];
 };
 
-export const AdminOrderDashboard = () => {
+const AdminOrderDashboard: FC = () => {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [statusEditOpen, setStatusEditOpen] = useState(false);
   const [statusChange, setStatusChange] = useState<OrderStatus | "">("");
