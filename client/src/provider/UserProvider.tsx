@@ -40,7 +40,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     password: string;
   }): Promise<SignUpResponse> => {
     const res = await axios.post(
-      `${process.env.BACKEND_ENDPOINT}/sign-up`,
+      `${process.env.BACKEND_ENDPOINT}/auth/sign-up`,
       data
     );
     return res.data;
@@ -51,7 +51,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     password: string;
   }): Promise<SignInResponse> => {
     const res = await axios.post(
-      `${process.env.BACKEND_ENDPOINT}/sign-in`,
+      `${process.env.BACKEND_ENDPOINT}/auth/sign-in`,
       data
     );
     return res.data;
@@ -59,7 +59,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   const verifyUser = async (token: string): Promise<VerifyUserResponse> => {
     const res = await axios.get(
-      `${process.env.BACKEND_ENDPOINT}/verify-user?token=${token}`
+      `${process.env.BACKEND_ENDPOINT}/auth/verify-user?token=${token}`
     );
     return res.data;
   };
@@ -68,7 +68,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     email: string
   ): Promise<PasswordResetRequestResponse> => {
     const res = await axios.post(
-      `${process.env.BACKEND_ENDPOINT}/reset-password-request`,
+      `${process.env.BACKEND_ENDPOINT}/auth/reset-password-request`,
       {
         email,
       }
@@ -80,7 +80,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     token: string
   ): Promise<VerifyResetTokenResponse> => {
     const res = await axios.get(
-      `${process.env.BACKEND_ENDPOINT}/verify-reset-password-request?token=${token}`
+      `${process.env.BACKEND_ENDPOINT}/auth/verify-reset-password-request?token=${token}`
     );
     return res.data;
   };
@@ -90,7 +90,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     newPassword: string;
   }): Promise<ResetPasswordResponse> => {
     const res = await axios.post(
-      `${process.env.BACKEND_ENDPOINT}/reset-password`,
+      `${process.env.BACKEND_ENDPOINT}/auth/reset-password`,
       data
     );
     return res.data;

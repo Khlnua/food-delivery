@@ -26,7 +26,7 @@ const fetcher = (url: string) =>
 
 export const FoodMenuForAdmin = () => {
   const { data: categories = [], mutate } = useSWR<CategoryWithFoods[]>(
-    `${process.env.BACKEND_ENDPOINT}/food-category/`,
+    `${process.env.BACKEND_ENDPOINT}/food-category`,
     fetcher
   );
 
