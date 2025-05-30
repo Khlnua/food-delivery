@@ -26,7 +26,7 @@ const fetcher = (url: string) =>
 
 export const FoodMenuForAdmin = () => {
   const { data: categories = [], mutate } = useSWR<CategoryWithFoods[]>(
-    "http://localhost:8000/food-category/",
+    `${process.env.BACKEND_ENDPOINT}/food-category/`,
     fetcher
   );
 
@@ -40,7 +40,14 @@ export const FoodMenuForAdmin = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (data: { foodName: string; price: number; ingredients: string; image: string; category: string }) => { // Replaced `any` with specific type
+  const handleSubmit = async (data: {
+    foodName: string;
+    price: number;
+    ingredients: string;
+    image: string;
+    category: string;
+  }) => {
+    // Replaced `any` with specific type
     try {
       const payload = {
         ...data,
@@ -50,7 +57,7 @@ export const FoodMenuForAdmin = () => {
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (editData) {
         await axios.patch(
-          `http://localhost:8000/food/${editData._id}`,
+          `${process.env.BACKEND_ENDPOINT}/food/${editData._id}`,
           payload,
           {
             headers: {
@@ -59,7 +66,7 @@ export const FoodMenuForAdmin = () => {
           }
         );
       } else {
-        await axios.post("http://localhost:8000/food", data, {
+        await axios.post(`${process.env.BACKEND_ENDPOINT}/food`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -106,8 +113,7 @@ export const FoodMenuForAdmin = () => {
               >
                 <div className="relative rounded-md h-32">
                   <img
-                                      className="rounded-md w-[238.75px] h-[132px] object-cover"
-
+                    className="rounded-md w-[238.75px] h-[132px] object-cover"
                     src={food.image}
                     alt={food.foodName}
                   />

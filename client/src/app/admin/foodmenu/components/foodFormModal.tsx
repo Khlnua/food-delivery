@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { GetFoodImage } from "./FoodImageUpload"; 
+import { GetFoodImage } from "./FoodImageUpload";
 import { Trash, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,20 @@ import { Button } from "@/components/ui/button";
 type FoodFormProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { foodName: string; price: number; ingredients: string; image: string; category: string }) => void; 
-  initialData?: { _id:string, foodName: string; price: number; ingredients: string; image: string } | null; 
+  onSubmit: (data: {
+    foodName: string;
+    price: number;
+    ingredients: string;
+    image: string;
+    category: string;
+  }) => void;
+  initialData?: {
+    _id: string;
+    foodName: string;
+    price: number;
+    ingredients: string;
+    image: string;
+  } | null;
   categoryId: string;
 };
 
@@ -69,7 +81,7 @@ export const FoodFormModal = ({
       price: parseFloat(form.price),
       category: categoryId,
     };
-    onSubmit(formatted); 
+    onSubmit(formatted);
     setForm({
       _id: "",
       foodName: "",
@@ -82,14 +94,18 @@ export const FoodFormModal = ({
 
   const handleDelete = async (data: FoodId) => {
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (!data._id) return;
 
-      await axios.delete(`http://localhost:8000/food-category/${categoryId}/food/${data._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(
+        `${process.env.BACKEND_ENDPOINT}/food-category/${categoryId}/food/${data._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       onClose();
       alert("Dish deleted successfully.");
@@ -143,9 +159,9 @@ export const FoodFormModal = ({
             />
           </div>
 
-          <GetFoodImage onUpload={(url) => setForm((prev) => ({ ...prev, image: url }))} />
-
-      
+          <GetFoodImage
+            onUpload={(url) => setForm((prev) => ({ ...prev, image: url }))}
+          />
         </div>
 
         <div className="mt-6 flex justify-between items-center">

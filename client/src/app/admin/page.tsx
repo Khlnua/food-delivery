@@ -64,17 +64,17 @@ const AdminOrderDashboard: FC = () => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date("2025-05-01"),
     to: new Date("2025-05-31"),
-  }); 
+  });
   useEffect(() => {
     const getOrders = async () => {
       try {
         const res = await axios.get<AllOrder>(
-          "http://localhost:8000/food-order"
+          `${process.env.BACKEND_ENDPOINT}/food-order`
         );
         setOrders(res.data?.orders);
       } catch (error) {
         if (error instanceof Error) {
-          console.error("Failed to fetch orders:", error.message); 
+          console.error("Failed to fetch orders:", error.message);
         }
       }
     };

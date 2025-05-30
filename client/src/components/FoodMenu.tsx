@@ -30,7 +30,7 @@ export const FoodMenu = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get<AllFoodCategories>(
-          "http://localhost:8000/food-category"
+          `${process.env.BACKEND_ENDPOINT}/food-category`
         );
         setMenuData(response.data?.allFilteredFoods || []);
       } catch (error: unknown) {
@@ -46,11 +46,7 @@ export const FoodMenu = () => {
 
   return (
     <div className="flex flex-col pl-20">
-      {error && (
-        <p className="text-red-500 font-medium">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-red-500 font-medium">{error}</p>}
       {menuData.map((category) => (
         <div key={category._id} className="flex flex-col gap-4 p-6 w-300">
           <div>

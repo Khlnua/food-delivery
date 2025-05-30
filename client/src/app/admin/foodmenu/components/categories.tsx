@@ -32,11 +32,11 @@ export const CategoriesForAdmin = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get<AllFoodCategories>(
-        "http://localhost:8000/food-category"
+        `${process.env.BACKEND_ENDPOINT}/food-category`
       );
       setData(response.data?.allFilteredFoods || []);
     } catch (error) {
-      console.error("Failed to fetch data:", error); 
+      console.error("Failed to fetch data:", error);
     }
   };
 
@@ -52,7 +52,7 @@ export const CategoriesForAdmin = () => {
         typeof window !== "undefined" && localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:8000/food-category",
+        `${process.env.BACKEND_ENDPOINT}/food-category`,
         { categoryName },
         {
           headers: {
@@ -76,9 +76,7 @@ export const CategoriesForAdmin = () => {
       <div className="flex gap-4 flex-wrap">
         <Button className="border rounded-full bg-white text-black border-[#E4E4E7]">
           All Dishes
-          <span>
-        
-          </span>
+          <span></span>
         </Button>
 
         {data.map((category) => (

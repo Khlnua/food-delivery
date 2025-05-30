@@ -21,7 +21,7 @@ export const FooterForHome = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get<AllFoodCategories>(
-        "http://localhost:8000/food-category"
+        `${process.env.BACKEND_ENDPOINT}/food-category`
       );
       setData(response.data?.allFilteredFoods || []);
     } catch (error: unknown) {
